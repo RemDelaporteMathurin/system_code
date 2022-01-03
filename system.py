@@ -1,4 +1,5 @@
 import sympy as sp
+import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
@@ -45,12 +46,20 @@ class System:
         while self.current_time - start_time < duration:
             self.advance()
 
-    def plot(self):
+    def plot_concentrations(self):
         for box in self.boxes:
             plt.plot(self.t, box.concentrations, label=box.name)
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("Concentrations")
+        plt.show()
+
+    def plot_inventories(self):
+        for box in self.boxes:
+            plt.plot(self.t, np.array(box.concentrations)*box.volume, label=box.name)
+        plt.legend()
+        plt.xlabel("Time")
+        plt.ylabel("Inventories")
         plt.show()
 
 
@@ -66,16 +75,20 @@ class Box:
         self.generation_term = generation_term
 
 
-storage = Box("Storage", {"Plasma": 1}, volume=1, initial_concentration=3)
-plasma = Box("Plasma", {"Breeder": 1}, volume=1, generation_term=-1)
+storage = Box("Storage", {"Plasma": 0.45}, volume=100, initial_concentration=1/100)
+plasma = Box("Plasma", {}, volume=1, generation_term=-1, initial_concentration=1)
 breeder = Box("Breeder", {"Storage": 1}, volume=1, generation_term=1.2)
 out = Box("Out", outputs={}, volume=1, initial_concentration=0)
 my_system = System([storage, plasma, breeder, out])
-my_system.run(20)
-# while my_system.current_time < 20:
-#     my_system.advance()
+# my_system.run(20)
+while my_system.current_time < 20:
+    my_system.advance()
 
-#     # Example of conditional flowrate
-#     if breeder.concentration*breeder.outputs["Storage"] > storage.concentration*storage.outputs["Plasma"]:
-#         storage.outputs["Out"] = (breeder.concentration*breeder.outputs["Storage"] - storage.concentration*storage.outputs["Plasma"])/storage.concentration
-my_system.plot()
+    # Example of conditional flowrate
+    # if breeder.concentration*breeder.outputs["Storage"] > storage.concentration*storage.outputs["Plasma"]:
+    #     storage.outputs["Out"] = (breeder.concentration*breeder.outputs["Storage"] - injection_rate)/storage.concentration
+
+    # Modify flowrate according to injection rate
+    injection_rate = 1
+    storage.outputs["Plasma"] = injection_rate/storage.concentration
+my_system.plot_inventories()
