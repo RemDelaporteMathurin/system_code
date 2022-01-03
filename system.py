@@ -40,6 +40,11 @@ class System:
         self.t.append(self.current_time)
         self.equations = self.build_equations()
 
+    def run(self, duration):
+        start_time = self.current_time
+        while self.current_time - start_time < duration:
+            self.advance()
+
     def plot(self):
         for box in self.boxes:
             plt.plot(self.t, box.concentrations, label=box.name)
@@ -61,12 +66,16 @@ class Box:
         self.generation_term = generation_term
 
 
-box_1 = Box("Storage", {"Plasma": 2}, volume=1, initial_concentration=1)
-box_2 = Box("Plasma", {"Breeding": 2}, volume=1, generation_term=-1)
-box_3 = Box("Breeding", {"Storage": 1, "Plasma": 1}, volume=1, generation_term=1.2)
+storage = Box("Storage", {"Plasma": 1}, volume=1, initial_concentration=3)
+plasma = Box("Plasma", {"Breeder": 1}, volume=1, generation_term=-1)
+breeder = Box("Breeder", {"Storage": 1}, volume=1, generation_term=1.2)
+out = Box("Out", outputs={}, volume=1, initial_concentration=0)
+my_system = System([storage, plasma, breeder, out])
+my_system.run(20)
+# while my_system.current_time < 20:
+#     my_system.advance()
 
-my_system = System([box_1, box_2, box_3])
-
-while my_system.current_time < 10:
-    my_system.advance()
+#     # Example of conditional flowrate
+#     if breeder.concentration*breeder.outputs["Storage"] > storage.concentration*storage.outputs["Plasma"]:
+#         storage.outputs["Out"] = (breeder.concentration*breeder.outputs["Storage"] - storage.concentration*storage.outputs["Plasma"])/storage.concentration
 my_system.plot()
