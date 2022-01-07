@@ -28,7 +28,9 @@ jobs:
           python setup.py install
 
       - name: Run tests
-        run: pytest tests
+        run: |
+          pip install pytest
+          pytest tests
 
       - name: Run examples
         run: |
