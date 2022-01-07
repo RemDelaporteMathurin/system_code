@@ -7,9 +7,9 @@ LAMBDA = 1.678e-9  # in s-1
 
 
 class System:
-    def __init__(self, boxes):
+    def __init__(self, boxes, dt=0.2):
         self.boxes = boxes
-        self.dt = 0.2
+        self.dt = dt
         self.equations = self.build_equations()
         self.current_time = 0
         self.t = [self.current_time]
