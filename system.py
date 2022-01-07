@@ -3,6 +3,8 @@ import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
+LAMBDA = 1.678e-9  # in s-1
+
 
 class System:
     def __init__(self, boxes):
@@ -14,7 +16,7 @@ class System:
 
     def build_equations(self):
         def equations(p):
-            # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation
+            # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
             list_of_eq = {}
             # initialise all equations to 0
             for box in self.boxes:
@@ -22,11 +24,17 @@ class System:
 
             # build
             for i, box in enumerate(self.boxes):
-                list_of_eq[box.name] += -box.volume*(p[i] - box.old_concentration)/self.dt
+                box_concentration = p[i]
+                # V*(c- c_n)/dt
+                list_of_eq[box.name] += -box.volume*(box_concentration - box.old_concentration)/self.dt
+                # + generation
                 list_of_eq[box.name] += box.volume*box.generation_term
+                # - V*lambda*c
+                list_of_eq[box.name] += -box.volume*box_concentration*LAMBDA
+                # for each output box
                 for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
-                    list_of_eq[box.name] += -flowrate*p[i]
-                    list_of_eq[name] += flowrate*p[i]
+                    list_of_eq[box.name] += -flowrate*box_concentration
+                    list_of_eq[name] += flowrate*box_concentration
             return [val for val in list_of_eq.values()]
         return equations
 
