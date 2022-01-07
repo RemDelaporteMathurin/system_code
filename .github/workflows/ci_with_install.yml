@@ -1,0 +1,38 @@
+
+name: CI with install
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '.gitignore'
+      - '*.md'
+      - 'CITATION.cff'
+      - 'LICENSE.txt'
+      - 'readthedocs.yml'
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+    container:
+      image: openmc/openmc:v0.12.1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: install package
+        run: |
+          python setup.py install
+
+      - name: Run tests
+        run: pytest tests
+
+      - name: Run examples
+        run: |
+          cd examples
+          python balanced_scenario.py
+          python under_produce_scenario.py
+          python over_produce_scenario.py
