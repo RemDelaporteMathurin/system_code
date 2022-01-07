@@ -34,6 +34,5 @@ jobs:
         run: |
           cd examples
           python balanced_scenario.py
-          # TODO make these examples
-          # python under_produce_scenario.py
-          # python over_produce_scenario.py
+          python under_produce_scenario.py
+          python over_produce_scenario.py
