@@ -16,6 +16,11 @@ class System:
 
     def build_equations(self):
         def equations(p):
+            # map the concentrations to the boxes
+            box_conc_map = {}
+            for i, box in enumerate(self.boxes):
+                box_conc_map[box.name] = p[i]
+
             # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
             list_of_eq = {}
             # initialise all equations to 0
@@ -24,14 +29,11 @@ class System:
 
             # build
             for i, box in enumerate(self.boxes):
+                # build internal equation (derivative, sources, decay...)
+                list_of_eq[box.name] += box.internal_equation(box_conc_map, self.dt)
+
+                # for each output add inputs and outputs accordingly
                 box_concentration = p[i]
-                # V*(c- c_n)/dt
-                list_of_eq[box.name] += -box.volume*(box_concentration - box.old_concentration)/self.dt
-                # + generation
-                list_of_eq[box.name] += box.volume*box.generation_term
-                # - V*lambda*c
-                list_of_eq[box.name] += -box.volume*box_concentration*LAMBDA
-                # for each output box
                 for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
                     list_of_eq[box.name] += -flowrate*box_concentration
                     list_of_eq[name] += flowrate*box_concentration
@@ -85,3 +87,23 @@ class Box:
 
     def update(self):
         return
+
+    def internal_equation(self, box_conc_map, stepsize):
+        """Builds the equation for the box excluding links with other boxes
+
+        Args:
+            box_conc_map (dict): a map linking boxes names to their
+                concentrations
+            stepsize (float): the stepsize
+
+        Returns:
+            float: the value of internal equation of the box
+        """
+        equation = 0
+        # V*(c- c_n)/dt
+        equation += -self.volume*(box_conc_map[self.name] - self.old_concentration)/stepsize
+        # + generation
+        equation += self.volume*self.generation_term
+        # - V*lambda*c
+        equation += -self.volume*box_conc_map[self.name]*LAMBDA
+        return equation
