@@ -1,9 +1,9 @@
-import sympy as sp
 import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
 from system_code import LAMBDA
+
 
 class System:
     def __init__(self, boxes, dt=0.2):
