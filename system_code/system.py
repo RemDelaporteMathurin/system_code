@@ -101,7 +101,7 @@ class Box:
         equation = 0
         # V*(c- c_n)/dt
         equation += -self.volume*(box_conc_map[self.name] - self.old_concentration)/stepsize
-        # + generation
+        # + V*generation
         equation += self.volume*self.generation_term
         # - V*lambda*c
         equation += -self.volume*box_conc_map[self.name]*LAMBDA
