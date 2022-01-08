@@ -3,8 +3,7 @@ import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
-LAMBDA = 1.678e-9  # in s-1
-
+from system_code import LAMBDA
 
 class System:
     def __init__(self, boxes, dt=0.2):
@@ -45,7 +44,7 @@ class System:
         concentrations = fsolve(self.equations, initial_guess)
         for box, new_concentration in zip(self.boxes, concentrations):
             box.concentration = new_concentration
-            box.old_concentration = box.concentration
+            box.old_concentration = new_concentration
             box.concentrations.append(new_concentration)
             box.update()
         self.current_time += self.dt
