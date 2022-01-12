@@ -35,13 +35,19 @@ class Box:
         Returns:
             float: the value of internal equation of the box
         """
-        equation = 0
+        # equation = pint.Quantity(0, 'meter ** -3')
         # V*(c- c_n)/dt
-        equation += (
-            -self.volume * (box_conc_map[self.name] - self.old_concentration) / stepsize
+        print(self.old_concentration)
+        equation1 = (
+            -self.volume * (pint.Quantity(box_conc_map[self.name], 'meter ** -3') - self.old_concentration) / stepsize
         )
         # + V*generation
-        equation += self.volume * self.generation_term
+        equation2 = self.volume * pint.Quantity(self.generation_term, 'second**-1')
         # - V*lambda*c
-        equation += -self.volume * box_conc_map[self.name] * LAMBDA
-        return equation
+        equation3 = -self.volume * pint.Quantity(box_conc_map[self.name], 'meter ** -3') * LAMBDA
+        print('\nequations')
+        print(equation1)
+        print(equation2)
+        print(equation3)
+        all_equations = equation1 + equation2 + equation3
+        return all_equations

@@ -4,7 +4,7 @@ import system_code as tsc
 
 plasma = tsc.Plasma(
     name="Plasma",
-    outputs ={"Storage": 1},
+    outputs ={"Storage": (1, 'second ** -1')},
     volume=(1, 'meter **3'),
     plasma_burning_rate=1,
     initial_concentration=(0, 'meter **-3')
@@ -13,7 +13,7 @@ plasma = tsc.Plasma(
 
 breeder = tsc.Box(
     name="Breeder",
-    outputs ={"Storage": 1},
+    outputs ={"Storage": (1, 'second ** -1')},
     volume=(1, 'meter **3'),
     generation_term=1.05,
     initial_concentration=(0, 'meter **-3')

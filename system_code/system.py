@@ -1,10 +1,10 @@
-import numpy as np
-from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
+import numpy as np
+import pint
+from scipy.optimize import fsolve
 
 from system_code import LAMBDA
 
-import pint
 
 class System:
     def __init__(self, boxes, dt=(0.2, 'seconds')):
@@ -30,22 +30,32 @@ class System:
             # build
             for i, box in enumerate(self.boxes):
                 # build internal equation (derivative, sources, decay...)
+                print(box_conc_map)
+
                 list_of_eq[box.name] += box.internal_equation(box_conc_map, self.dt)
 
                 # for each output add inputs and outputs accordingly
                 box_concentration = p[i]
                 for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
-                    list_of_eq[box.name] += -flowrate*box_concentration
-                    list_of_eq[name] += flowrate*box_concentration
+                    flowrateQ = pint.Quantity(flowrate[0], flowrate[1])
+                    # list_of_eq[box.name] += -flowrateQ.magnitude*box_concentration.magnitude
+                    # list_of_eq[name] += flowrateQ.magnitude*box_concentration.magnitude
+                    list_of_eq[box.name] += -flowrateQ*box_concentration.magnitude
+                    list_of_eq[name] += flowrateQ*box_concentration.magnitude
+                    # print(flowrateQ.magnitude*box_concentration.magnitude)
             return [val for val in list_of_eq.values()]
         return equations
 
     def advance(self):
-        initial_guess = [box.old_concentration for box in self.boxes]
+        # initial_guess = [box.old_concentration for box in self.boxes]
+        initial_guess = [box.old_concentration.magnitude for box in self.boxes]
         print(initial_guess)
         print(self.equations)
-        input()
+        # fsolve can't accept func or x0 with units
         concentrations = fsolve(self.equations, initial_guess)
+        print('concentrations', concentrations)
+        input()
+        print()
         for box, new_concentration in zip(self.boxes, concentrations):
             box.concentration = new_concentration
             box.old_concentration = new_concentration
