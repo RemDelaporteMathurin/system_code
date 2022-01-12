@@ -4,13 +4,14 @@ import matplotlib.pyplot as plt
 
 from system_code import LAMBDA
 
+import pint
 
 class System:
-    def __init__(self, boxes, dt=0.2):
+    def __init__(self, boxes, dt=(0.2, 'seconds')):
         self.boxes = boxes
-        self.dt = dt
+        self.dt = pint.Quantity(dt[0], dt[1])
         self.equations = self.build_equations()
-        self.current_time = 0
+        self.current_time = pint.Quantity(0, 'seconds')
         self.t = [self.current_time]
 
     def build_equations(self):
@@ -41,6 +42,9 @@ class System:
 
     def advance(self):
         initial_guess = [box.old_concentration for box in self.boxes]
+        print(initial_guess)
+        print(self.equations)
+        input()
         concentrations = fsolve(self.equations, initial_guess)
         for box, new_concentration in zip(self.boxes, concentrations):
             box.concentration = new_concentration
@@ -52,8 +56,9 @@ class System:
         self.equations = self.build_equations()
 
     def run(self, duration):
+        durationQ = pint.Quantity(duration[0], duration[1])
         start_time = self.current_time
-        while self.current_time - start_time < duration:
+        while self.current_time - start_time < durationQ:
             self.advance()
 
     def plot_concentrations(self):

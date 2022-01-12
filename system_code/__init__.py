@@ -1,4 +1,7 @@
-LAMBDA = 1.678e-9  # in s-1
+import pint
+ureg = pint.UnitRegistry()
+
+LAMBDA = pint.Quantity(1.678e-9, 'seconds ** -1')
 
 from .system import System
 from .box import Box

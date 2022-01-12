@@ -3,8 +3,13 @@ from system_code import Box
 
 class Plasma(Box):
     def __init__(
-            self, name, outputs, volume, plasma_burning_rate,
-            initial_concentration=0, generation_term=0):
+            self,
+            name,
+            outputs,
+            volume,
+            plasma_burning_rate,
+            initial_concentration=(0, 'particle per meter ** 3'),
+            generation_term=(0, 'particle per second')):
         super().__init__(
             name, outputs, volume,
             initial_concentration, generation_term)
