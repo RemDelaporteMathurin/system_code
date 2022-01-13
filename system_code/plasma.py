@@ -5,12 +5,12 @@ import pint
 class Plasma(Box):
     def __init__(
         self,
-        name,
-        outputs,
-        volume,
-        plasma_burning_rate,
-        initial_concentration=0,
-        generation_term=0,
+        name: str,
+        outputs: dict,
+        volume: float,
+        plasma_burning_rate: float,
+        initial_concentration: float = 0,
+        generation_term: float = 0,
     ):
         super().__init__(name, outputs, volume, initial_concentration, generation_term)
         self.plasma_burning_rate = pint.Quantity(

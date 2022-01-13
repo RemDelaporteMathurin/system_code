@@ -7,12 +7,21 @@ from system_code import LAMBDA
 
 
 class System:
-    def __init__(self, boxes, dt=0.2):
+    def __init__(self, boxes: list, dt: float=0.2):
         self.boxes = boxes
         self.dt = pint.Quantity(dt, "seconds")
         self.equations = self.build_equations()
         self.current_time = pint.Quantity(0, "seconds")
         self.t = [self.current_time]
+        """A container class for combining boxes into a system
+
+        Args:
+            boxes: a list of system_code.Box class instances to combine into a
+                linked system
+            dt: the time step to use when iterating through the equations. A
+                smaller time step will be more accurate but take longer to
+                solve. dt should be input in units of seconds
+        """
 
     def build_equations(self):
         def equations(p):
