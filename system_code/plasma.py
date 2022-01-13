@@ -1,12 +1,15 @@
-from system_code import Box
+from typing import Dict
+
 import pint
+
+from system_code import Box
 
 
 class Plasma(Box):
     def __init__(
         self,
         name: str,
-        outputs: dict,
+        outputs: Dict[str, float],
         volume: float,
         plasma_burning_rate: float,
         initial_concentration: float = 0,

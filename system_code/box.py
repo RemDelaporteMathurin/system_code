@@ -1,12 +1,15 @@
-from system_code import LAMBDA, ureg
+from typing import Dict
+
 import pint
+
+from system_code import LAMBDA
 
 
 class Box:
     def __init__(
         self,
         name: str,
-        outputs: dict,
+        outputs: Dict[str, float],
         volume: float,
         initial_concentration: float = 0,
         generation_term: float = 0,

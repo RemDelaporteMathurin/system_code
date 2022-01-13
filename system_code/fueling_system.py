@@ -1,12 +1,15 @@
-from system_code import Box
+from typing import Dict
+
 import pint
+
+from system_code import Box
 
 
 class StorageAndDeliverySystem(Box):
     def __init__(
         self,
         name: str,
-        output_name: dict,
+        output_name: Dict[str, float],
         volume: float,
         fueling_rate: float,
         initial_concentration: float,

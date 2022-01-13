@@ -7,7 +7,7 @@ from system_code import LAMBDA
 
 
 class System:
-    def __init__(self, boxes: list, dt: float=0.2):
+    def __init__(self, boxes: list, dt: float = 0.2):
         self.boxes = boxes
         self.dt = pint.Quantity(dt, "seconds")
         self.equations = self.build_equations()
