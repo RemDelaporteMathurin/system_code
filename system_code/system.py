@@ -9,9 +9,9 @@ from system_code import LAMBDA
 class System:
     def __init__(self, boxes, dt=0.2):
         self.boxes = boxes
-        self.dt = pint.Quantity(dt, 'seconds')
+        self.dt = pint.Quantity(dt, "seconds")
         self.equations = self.build_equations()
-        self.current_time = pint.Quantity(0, 'seconds')
+        self.current_time = pint.Quantity(0, "seconds")
         self.t = [self.current_time]
 
     def build_equations(self):
@@ -38,10 +38,15 @@ class System:
                 # for each output add inputs and outputs accordingly
                 box_concentration = p[i]
                 for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
-                    flowrateQ = pint.Quantity(flowrate, 'particles per second')
-                    list_of_eq[box.name] += -flowrateQ.magnitude*box_concentration.magnitude
-                    list_of_eq[name] += flowrateQ.magnitude*box_concentration.magnitude
+                    flowrateQ = pint.Quantity(flowrate, "particles per second")
+                    list_of_eq[box.name] += (
+                        -flowrateQ.magnitude * box_concentration.magnitude
+                    )
+                    list_of_eq[name] += (
+                        flowrateQ.magnitude * box_concentration.magnitude
+                    )
             return [val for val in list_of_eq.values()]
+
         return equations
 
     def advance(self):
@@ -61,7 +66,7 @@ class System:
         self.equations = self.build_equations()
 
     def run(self, duration):
-        durationQ = pint.Quantity(duration, 'seconds')
+        durationQ = pint.Quantity(duration, "seconds")
         start_time = self.current_time
         while self.current_time - start_time < durationQ:
             self.advance()
@@ -76,7 +81,7 @@ class System:
 
     def plot_inventories(self):
         for box in self.boxes:
-            plt.plot(self.t, np.array(box.concentrations)*box.volume, label=box.name)
+            plt.plot(self.t, np.array(box.concentrations) * box.volume, label=box.name)
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("Inventories")
