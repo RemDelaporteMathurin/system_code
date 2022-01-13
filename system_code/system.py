@@ -7,15 +7,16 @@ from system_code import LAMBDA
 
 
 class System:
-    def __init__(self, boxes, dt=(0.2, 'seconds')):
+    def __init__(self, boxes, dt=0.2):
         self.boxes = boxes
-        self.dt = pint.Quantity(dt[0], dt[1])
+        self.dt = pint.Quantity(dt, 'seconds')
         self.equations = self.build_equations()
         self.current_time = pint.Quantity(0, 'seconds')
         self.t = [self.current_time]
 
     def build_equations(self):
         def equations(p):
+            # fsolve can't accept func or x0 with units hence self.equations does not include units and .magnitude has been used
             # map the concentrations to the boxes
             box_conc_map = {}
             for i, box in enumerate(self.boxes):
@@ -23,6 +24,7 @@ class System:
 
             # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
             list_of_eq = {}
+            # if this is initialise then units need adding to this 0 value?
             # initialise all equations to 0
             for box in self.boxes:
                 list_of_eq[box.name] = 0
@@ -30,32 +32,25 @@ class System:
             # build
             for i, box in enumerate(self.boxes):
                 # build internal equation (derivative, sources, decay...)
-                print(box_conc_map)
 
-                list_of_eq[box.name] += box.internal_equation(box_conc_map, self.dt)
+                list_of_eq[box.name] = box.internal_equation(box_conc_map, self.dt)
 
                 # for each output add inputs and outputs accordingly
                 box_concentration = p[i]
                 for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
-                    flowrateQ = pint.Quantity(flowrate[0], flowrate[1])
-                    # list_of_eq[box.name] += -flowrateQ.magnitude*box_concentration.magnitude
-                    # list_of_eq[name] += flowrateQ.magnitude*box_concentration.magnitude
-                    list_of_eq[box.name] += -flowrateQ*box_concentration.magnitude
-                    list_of_eq[name] += flowrateQ*box_concentration.magnitude
-                    # print(flowrateQ.magnitude*box_concentration.magnitude)
+                    flowrateQ = pint.Quantity(flowrate, 'particles per second')
+                    list_of_eq[box.name] += -flowrateQ.magnitude*box_concentration.magnitude
+                    list_of_eq[name] += flowrateQ.magnitude*box_concentration.magnitude
             return [val for val in list_of_eq.values()]
         return equations
 
     def advance(self):
         # initial_guess = [box.old_concentration for box in self.boxes]
         initial_guess = [box.old_concentration.magnitude for box in self.boxes]
-        print(initial_guess)
-        print(self.equations)
-        # fsolve can't accept func or x0 with units
+        # fsolve can't accept func or x0 with units hence initial_guess does not include units and .magnitude has been used
+
         concentrations = fsolve(self.equations, initial_guess)
-        print('concentrations', concentrations)
-        input()
-        print()
+
         for box, new_concentration in zip(self.boxes, concentrations):
             box.concentration = new_concentration
             box.old_concentration = new_concentration
@@ -66,7 +61,7 @@ class System:
         self.equations = self.build_equations()
 
     def run(self, duration):
-        durationQ = pint.Quantity(duration[0], duration[1])
+        durationQ = pint.Quantity(duration, 'seconds')
         start_time = self.current_time
         while self.current_time - start_time < durationQ:
             self.advance()

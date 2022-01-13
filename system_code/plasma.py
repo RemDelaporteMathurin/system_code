@@ -1,5 +1,5 @@
 from system_code import Box
-
+import pint
 
 class Plasma(Box):
     def __init__(
@@ -8,12 +8,12 @@ class Plasma(Box):
             outputs,
             volume,
             plasma_burning_rate,
-            initial_concentration=(0, 'particle per meter ** 3'),
-            generation_term=(0, 'particle per second')):
+            initial_concentration=0,
+            generation_term=0):
         super().__init__(
             name, outputs, volume,
             initial_concentration, generation_term)
-        self.plasma_burning_rate = plasma_burning_rate
+        self.plasma_burning_rate = pint.Quantity(plasma_burning_rate, 'particle per meter ** 3')
 
     def internal_equation(self, box_conc_map, stepsize):
         """V*(c- c_n)/dt = generation - V*lambda*c - V*burning_rate*c

@@ -7,12 +7,12 @@ class StorageAndDeliverySystem(Box):
         self,
         name: str,
         output_name: dict,
-        volume: Tuple[float, str],
-        fueling_rate: Tuple[float, str],
-        initial_concentration: Tuple[float, str],
+        volume: float,
+        fueling_rate: float,
+        initial_concentration: float,
     ):
-        self.fueling_rate = pint.Quantity(fueling_rate[0], fueling_rate[1])
-        self.initial_concentration = pint.Quantity(initial_concentration[0], initial_concentration[1])
+        self.fueling_rate = pint.Quantity(fueling_rate, 'particle per second')
+        self.initial_concentration = pint.Quantity(initial_concentration, 'particle per meter**3')
         self.flowrate = self.fueling_rate / self.initial_concentration
         self.output_name = output_name
         outputs = {output_name: self.flowrate}

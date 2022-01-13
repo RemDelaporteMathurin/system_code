@@ -6,20 +6,22 @@ class Box:
         self,
         name: str,
         outputs: dict,
-        volume: Tuple[float, str],
-        initial_concentration: Tuple[float, str] =  (0, 'particle per meter**3'),
+        volume: float,
+        initial_concentration: float = 0,
         generation_term: float = 0,
         # generation_term: Tuple[float, str] = (0, 'particle per second'),
     ):
         self.outputs = outputs
         self.name = name
         self.inputs = []
-        self.volume = pint.Quantity(volume[0], volume[1])
-        self.concentration = pint.Quantity(initial_concentration[0], initial_concentration[1])
-        self.old_concentration = pint.Quantity(initial_concentration[0], initial_concentration[1])
+        self.volume = pint.Quantity(volume, 'meter**3')
+        self.concentration = pint.Quantity(initial_concentration, 'particle per meter**3')
+        self.old_concentration = pint.Quantity(initial_concentration, 'particle per meter**3')
         self.concentrations = [self.concentration]
-        self.generation_term = generation_term
-        # self.generation_term = pint.Quantity(generation_term[0], generation_term[1])
+        self.generation_term = pint.Quantity(generation_term, 'particle per second')
+    """
+
+    """
 
     def update(self):
         return
@@ -35,19 +37,34 @@ class Box:
         Returns:
             float: the value of internal equation of the box
         """
-        # equation = pint.Quantity(0, 'meter ** -3')
+
+        concentration = pint.Quantity(box_conc_map[self.name], 'particles meter ** -3')
+
+        print('volume units=', self.volume.units)
+        print('concentration units=', concentration.units)
+        print('old_concentration units=', self.old_concentration.units)
+        print('stepsize units=', stepsize.units)
+
         # V*(c- c_n)/dt
-        print(self.old_concentration)
         equation1 = (
-            -self.volume * (pint.Quantity(box_conc_map[self.name], 'meter ** -3') - self.old_concentration) / stepsize
+            -self.volume * (concentration - self.old_concentration) / stepsize
         )
+
         # + V*generation
-        equation2 = self.volume * pint.Quantity(self.generation_term, 'second**-1')
+        equation2 = self.volume * self.generation_term
+
         # - V*lambda*c
-        equation3 = -self.volume * pint.Quantity(box_conc_map[self.name], 'meter ** -3') * LAMBDA
+        equation3 = -self.volume * concentration * LAMBDA
         print('\nequations')
-        print(equation1)
-        print(equation2)
-        print(equation3)
+        print('equation units', equation1.units)
+        print('equation units', equation2.units)
+        print('equation units', equation3.units)
+
+        input()
+        # fails with
+        # Cannot convert from 'particle / second' ([substance] / [time]) to 'meter ** 3 * particle / second' ([length] ** 3 * [substance] / [time])
+
         all_equations = equation1 + equation2 + equation3
+
+
         return all_equations
