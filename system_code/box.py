@@ -35,7 +35,7 @@ class Box:
             initial_concentration: the initial / starting concentration of
                 tritium in units of particles per m3
             generation_term: the rate of tritium generation within the box in
-                units of particle per meter**3
+                units of particle per meter**3 per second
         """
 
     def update(self):
