@@ -25,7 +25,7 @@ class Box:
             initial_concentration, "particle per meter**3"
         )
         self.concentrations = [self.concentration]
-        self.generation_term = pint.Quantity(generation_term, "particle per second")
+        self.generation_term = pint.Quantity(generation_term, "particle / meter ** 3 / second")
         """A generic box class for adaptation into more specialized classes 
 
         Args:
