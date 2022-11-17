@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="flf_systems_code",
+    name="system_code",
     version="develop",
     author="Rémi Delaporte-Mathurin",
     author_email="",
