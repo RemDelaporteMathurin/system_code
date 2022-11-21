@@ -12,6 +12,8 @@ class Box:
         self.concentrations = [self.concentration]
         self.generation_term = generation_term
 
+        self.equation = 0
+
     def update(self):
         return
 
@@ -26,11 +28,11 @@ class Box:
         Returns:
             float: the value of internal equation of the box
         """
-        equation = 0
+        self.equation = 0
         # V*(c- c_n)/dt
-        equation += -self.volume*(box_conc_map[self.name] - self.old_concentration)/stepsize
+        self.equation += -self.volume*(box_conc_map[self.name] - self.old_concentration)/stepsize
         # + V*generation
-        equation += self.volume*self.generation_term
+        self.equation += self.volume*self.generation_term
         # - V*lambda*c
-        equation += -self.volume*box_conc_map[self.name]*LAMBDA
-        return equation
+        self.equation += -self.volume*box_conc_map[self.name]*LAMBDA
+        # return equation

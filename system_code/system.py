@@ -29,7 +29,8 @@ class System:
             # build
             for i, box in enumerate(self.boxes):
                 # build internal equation (derivative, sources, decay...)
-                list_of_eq[box.name] += box.internal_equation(box_conc_map, self.dt)
+                box.internal_equation(box_conc_map, self.dt)
+                list_of_eq[box.name] += box.equation
 
                 # for each output add inputs and outputs accordingly
                 box_concentration = p[i]
