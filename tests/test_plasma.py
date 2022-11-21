@@ -17,7 +17,7 @@ def test_plasma_equation():
     # run
     my_plasma = tsc.Plasma("plasma", V, burning_rate, initial_concentration=c_n, generation_term=gamma)
 
-    my_plasma.internal_equation({my_plasma: c}, stepsize=dt)
+    my_plasma.build_equation({my_plasma: c}, stepsize=dt)
 
     expected_equation = -V*(c-c_n)/dt + V*gamma - V*tsc.LAMBDA*c - V*burning_rate*c
 

@@ -23,7 +23,7 @@ class Box:
     def update(self):
         return
 
-    def internal_equation(self, box_conc_map, stepsize):
+    def build_equation(self, box_conc_map, stepsize):
         """Builds the equation for the box excluding links with other boxes
 
         Args:
@@ -34,6 +34,8 @@ class Box:
         Returns:
             float: the value of internal equation of the box
         """
+        # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
+
         self.equation = 0
         # V*(c- c_n)/dt
         self.equation += -self.volume*(box_conc_map[self] - self.old_concentration)/stepsize

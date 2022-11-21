@@ -19,12 +19,10 @@ class System:
             for i, box in enumerate(self.boxes):
                 box_conc_map[box] = p[i]
 
-            # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
-
             # build
 
             for box in self.boxes:
-                box.internal_equation(box_conc_map, self.dt)
+                box.build_equation(box_conc_map, self.dt)
 
             return [box.equation for box in self.boxes]
         return equations
