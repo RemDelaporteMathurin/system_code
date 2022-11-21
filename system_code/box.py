@@ -5,15 +5,13 @@ class Box:
     def __init__(self, name, outputs, volume, initial_concentration=0, generation_term=0):
         self.outputs = outputs
         self.name = name
-        self.inputs = []
         self.volume = volume
-        self.concentration = initial_concentration
-        self.old_concentration = initial_concentration
+        self.initial_concentration = initial_concentration
+
+        self.concentration = self.initial_concentration
+        self.old_concentration = self.initial_concentration
         self.concentrations = [self.concentration]
         self.generation_term = generation_term
-
-    def update(self):
-        return
 
     def internal_equation(self, box_conc_map, stepsize):
         """Builds the equation for the box excluding links with other boxes
@@ -34,3 +32,9 @@ class Box:
         # - V*lambda*c
         equation += -self.volume*box_conc_map[self.name]*LAMBDA
         return equation
+
+    def reset(self):
+        self.concentration = self.initial_concentration
+        self.old_concentration = self.initial_concentration
+        self.concentrations = [self.concentration]
+        # TODO what about generation term?

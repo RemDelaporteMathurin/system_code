@@ -2,13 +2,12 @@ import numpy as np
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 
-from system_code import LAMBDA
-
 
 class System:
     def __init__(self, boxes, dt=0.2):
         self.boxes = boxes
-        self.dt = dt
+        self.initial_dt = dt
+        self.dt = self.initial_dt
         self.equations = self.build_equations()
         self.current_time = 0
         self.t = [self.current_time]
@@ -46,7 +45,6 @@ class System:
             box.concentration = new_concentration
             box.old_concentration = new_concentration
             box.concentrations.append(new_concentration)
-            box.update()
         self.current_time += self.dt
         self.t.append(self.current_time)
         self.equations = self.build_equations()
@@ -55,6 +53,14 @@ class System:
         start_time = self.current_time
         while self.current_time - start_time < duration:
             self.advance()
+
+    def reset(self):
+        self.dt = self.initial_dt
+        self.current_time = 0
+        self.t = [self.current_time]
+        for box in self.boxes:
+            box.reset()
+        self.equations = self.build_equations()
 
     def plot_concentrations(self):
         for box in self.boxes:
