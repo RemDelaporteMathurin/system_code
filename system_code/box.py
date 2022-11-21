@@ -25,6 +25,9 @@ class Box:
             box (Box): the target box
             flowrate (float): the flow rate in m3/s
         """
+        if box in self.outputs or self in box.inputs:
+            raise ValueError("Link already exists")
+
         self.outputs[box] = flowrate
         box.inputs[self] = flowrate
 
