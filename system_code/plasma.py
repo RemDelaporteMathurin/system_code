@@ -24,4 +24,4 @@ class Plasma(Box):
         super().internal_equation(box_conc_map, stepsize)
 
         plasma_burning_rate = self.plasma_burning_rate
-        self.equation += -plasma_burning_rate*box_conc_map[self.name]*self.volume
+        self.equation += -plasma_burning_rate*box_conc_map[self]*self.volume

@@ -22,7 +22,7 @@ class Box:
         """Builds the equation for the box excluding links with other boxes
 
         Args:
-            box_conc_map (dict): a map linking boxes names to their
+            box_conc_map (dict): a map linking boxes to their
                 concentrations
             stepsize (float): the stepsize
 
@@ -31,11 +31,11 @@ class Box:
         """
         self.equation = 0
         # V*(c- c_n)/dt
-        self.equation += -self.volume*(box_conc_map[self.name] - self.old_concentration)/stepsize
+        self.equation += -self.volume*(box_conc_map[self] - self.old_concentration)/stepsize
         # + V*generation
         self.equation += self.volume*self.generation_term
         # - V*lambda*c
-        self.equation += -self.volume*box_conc_map[self.name]*LAMBDA
+        self.equation += -self.volume*box_conc_map[self]*LAMBDA
 
     def reset(self):
         self.concentration = self.initial_concentration

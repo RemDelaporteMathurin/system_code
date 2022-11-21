@@ -17,7 +17,7 @@ class System:
             # map the concentrations to the boxes
             box_conc_map = {}
             for i, box in enumerate(self.boxes):
-                box_conc_map[box.name] = p[i]
+                box_conc_map[box] = p[i]
 
             # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
 
