@@ -85,3 +85,27 @@ def test_decay():
 
     assert A.concentrations[-1] == \
         pytest.approx(A.concentrations[0]/2, rel=0.05)
+
+
+def test_reset():
+    """Checks that when reset, the attributes of the system are reset too
+    """
+    # build
+    F_AB = 2
+    A = tsc.Box("A", {"B": F_AB}, volume=1, initial_concentration=2)
+    B = tsc.Box("B", {"C": 1}, volume=1, generation_term=0)
+    C = tsc.Box("C", {"A": 0}, volume=1, generation_term=0)
+    system = tsc.System([A, B, C], dt=0.01)
+
+    system.run(2)
+    old_eqs = system.equations
+    # run
+
+    system.reset()
+    # test
+
+    assert system.current_time == 0
+    assert system.dt == system.initial_dt
+    for box in system.boxes:
+        assert len(box.concentrations) == 1
+    assert system.equations != old_eqs
