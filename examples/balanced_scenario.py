@@ -18,5 +18,5 @@ while my_system.current_time < 20:
 
     # Modify flowrate according to injection rate
     injection_rate = 1
-    storage.outputs["Plasma"] = injection_rate/storage.concentration
+    storage.outputs[plasma] = injection_rate/storage.concentration
 my_system.plot_inventories()
