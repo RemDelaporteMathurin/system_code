@@ -8,9 +8,14 @@ def test_constant_inventory():
     doesn't vary
     """
     # build
-    A = tsc.Box("A", {"B": 1}, volume=1, initial_concentration=2)
-    B = tsc.Box("B", {"C": 1}, volume=1)
-    C = tsc.Box("C", {"A": 1}, volume=1)
+    A = tsc.Box("A", volume=1, initial_concentration=2)
+    B = tsc.Box("B", volume=1)
+    C = tsc.Box("C", volume=1)
+
+    A.add_output(B, 1)
+    B.add_output(C, 1)
+    C.add_output(A, 1)
+
     system = tsc.System([A, B, C])
 
     # run
@@ -32,9 +37,14 @@ def test_mass_conservation_system():
     conc_init_A = 2
     vol_A, vol_B, vol_C = 2, 3, 4
 
-    A = tsc.Box("A", {"B": 1}, volume=vol_A, initial_concentration=conc_init_A)
-    B = tsc.Box("B", {"C": 1}, volume=vol_B, generation_term=generation_source)
-    C = tsc.Box("C", {"A": 1}, volume=vol_C, generation_term=generation_source)
+    A = tsc.Box("A", volume=vol_A, initial_concentration=conc_init_A)
+    B = tsc.Box("B", volume=vol_B, generation_term=generation_source)
+    C = tsc.Box("C", volume=vol_C, generation_term=generation_source)
+
+    A.add_output(B, 1)
+    B.add_output(C, 1)
+    C.add_output(A, 1)
+
     system = tsc.System([A, B, C])
 
     # run
@@ -57,9 +67,14 @@ def test_mass_conservation_box():
     """
     # build
     F_AB = 2
-    A = tsc.Box("A", {"B": F_AB}, volume=1, initial_concentration=2)
-    B = tsc.Box("B", {"C": 1}, volume=1, generation_term=0)
-    C = tsc.Box("C", {"A": 0}, volume=1, generation_term=0)
+    A = tsc.Box("A", volume=1, initial_concentration=2)
+    B = tsc.Box("B", volume=1, generation_term=0)
+    C = tsc.Box("C", volume=1, generation_term=0)
+
+    A.add_output(B, F_AB)
+    B.add_output(C, 1)
+    C.add_output(A, 0)
+
     system = tsc.System([A, B, C], dt=0.01)
 
     # run
@@ -77,7 +92,7 @@ def test_mass_conservation_box():
 def test_decay():
     """Checks that concentration of a box decays with time
     """
-    A = tsc.Box("A", {}, volume=2, initial_concentration=3)
+    A = tsc.Box("A", volume=2, initial_concentration=3)
     half_life = np.log(2)/tsc.LAMBDA
     system = tsc.System([A], dt=half_life/30)
 
@@ -92,9 +107,14 @@ def test_reset():
     """
     # build
     F_AB = 2
-    A = tsc.Box("A", {"B": F_AB}, volume=1, initial_concentration=2)
-    B = tsc.Box("B", {"C": 1}, volume=1, generation_term=0)
-    C = tsc.Box("C", {"A": 0}, volume=1, generation_term=0)
+    A = tsc.Box("A", volume=1, initial_concentration=2)
+    B = tsc.Box("B", volume=1, generation_term=0)
+    C = tsc.Box("C", volume=1, generation_term=0)
+
+    A.add_output(B, F_AB)
+    B.add_output(C, 1)
+    C.add_output(A, 0)
+
     system = tsc.System([A, B, C], dt=0.01)
 
     system.run(2)
