@@ -15,7 +15,7 @@ def test_plasma_equation():
     gamma = sp.Symbol("gamma")
 
     # run
-    my_plasma = tsc.Plasma("plasma", {}, V, burning_rate, initial_concentration=c_n, generation_term=gamma)
+    my_plasma = tsc.Plasma("plasma", V, burning_rate, initial_concentration=c_n, generation_term=gamma)
 
     my_plasma.internal_equation({my_plasma: c}, stepsize=dt)
 

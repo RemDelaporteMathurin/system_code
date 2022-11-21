@@ -23,18 +23,9 @@ class System:
 
             # build
 
-            # build internal equation (derivative, sources, decay...)
             for box in self.boxes:
                 box.internal_equation(box_conc_map, self.dt)
 
-            for i, box in enumerate(self.boxes):
-                # for each output add inputs and outputs accordingly
-                box_concentration = p[i]
-                for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
-                    box.equation += -flowrate*box_concentration
-
-                    out_box = [b for b in self.boxes if b.name == name][0]
-                    out_box.equation += flowrate*box_concentration
             return [box.equation for box in self.boxes]
         return equations
 

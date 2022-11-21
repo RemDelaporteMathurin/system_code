@@ -2,8 +2,7 @@ from system_code import LAMBDA
 
 
 class Box:
-    def __init__(self, name, outputs, volume, initial_concentration=0, generation_term=0):
-        self.outputs = outputs
+    def __init__(self, name, volume, initial_concentration=0, generation_term=0):
         self.name = name
         self.volume = volume
         self.initial_concentration = initial_concentration
@@ -14,6 +13,12 @@ class Box:
         self.generation_term = generation_term
 
         self.equation = 0
+        self.inputs = {}
+        self.outputs = {}
+
+    def add_output(self, box, flowrate):
+        self.outputs[box] = flowrate
+        box.inputs[self] = flowrate
 
     def update(self):
         return
@@ -36,6 +41,14 @@ class Box:
         self.equation += self.volume*self.generation_term
         # - V*lambda*c
         self.equation += -self.volume*box_conc_map[self]*LAMBDA
+
+        # outputs
+        for flowrate in self.outputs.values():
+            self.equation += -flowrate*box_conc_map[self]
+
+        # inputs
+        for box, flowrate in self.inputs.items():
+            self.equation += flowrate*box_conc_map[box]
 
     def reset(self):
         self.concentration = self.initial_concentration
