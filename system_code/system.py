@@ -45,6 +45,7 @@ class System:
             box.concentration = new_concentration
             box.old_concentration = new_concentration
             box.concentrations.append(new_concentration)
+            box.update()
         self.current_time += self.dt
         self.t.append(self.current_time)
         self.equations = self.build_equations()

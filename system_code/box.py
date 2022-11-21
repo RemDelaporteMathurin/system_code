@@ -13,6 +13,9 @@ class Box:
         self.concentrations = [self.concentration]
         self.generation_term = generation_term
 
+    def update(self):
+        pass
+
     def internal_equation(self, box_conc_map, stepsize):
         """Builds the equation for the box excluding links with other boxes
 
