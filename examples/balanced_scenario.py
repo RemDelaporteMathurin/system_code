@@ -1,6 +1,6 @@
 import system_code as tsc
 
-storage = tsc.Box("Storage", {"Plasma": 0.45}, volume=100, initial_concentration=1/100)
+storage = tsc.Box("Storage", volume=100, initial_concentration=1/100)
 plasma = tsc.Box("Plasma", volume=1, generation_term=-1, initial_concentration=1)
 breeder = tsc.Box("Breeder", generation_term=1.05)
 
