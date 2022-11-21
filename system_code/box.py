@@ -17,6 +17,14 @@ class Box:
         self.outputs = {}
 
     def add_output(self, box, flowrate):
+        """Adds a link from this component to another.
+        This add the target box to this self.outputs and
+        this component to box.inputs
+
+        Args:
+            box (Box): the target box
+            flowrate (float): the flow rate in m3/s
+        """
         self.outputs[box] = flowrate
         box.inputs[self] = flowrate
 
