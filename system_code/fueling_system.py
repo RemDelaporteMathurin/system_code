@@ -6,8 +6,8 @@ class StorageAndDeliverySystem(Box):
         self.fueling_rate = fueling_rate
         self.flowrate = fueling_rate/initial_concentration
         self.output = output
-        outputs = {output: self.flowrate}
-        super().__init__(name, outputs, volume, initial_concentration=initial_concentration, generation_term=0)
+        super().__init__(name, volume, initial_concentration=initial_concentration, generation_term=0)
+        self.outputs[output] = self.flowrate
 
     def update(self):
         """Updates the flowing rate to ensure a fixed fueling rate
