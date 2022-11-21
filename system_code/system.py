@@ -20,23 +20,22 @@ class System:
                 box_conc_map[box.name] = p[i]
 
             # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
-            list_of_eq = {}
-            # initialise all equations to 0
-            for box in self.boxes:
-                list_of_eq[box.name] = 0
 
             # build
-            for i, box in enumerate(self.boxes):
-                # build internal equation (derivative, sources, decay...)
-                box.internal_equation(box_conc_map, self.dt)
-                list_of_eq[box.name] += box.equation
 
+            # build internal equation (derivative, sources, decay...)
+            for box in self.boxes:
+                box.internal_equation(box_conc_map, self.dt)
+
+            for i, box in enumerate(self.boxes):
                 # for each output add inputs and outputs accordingly
                 box_concentration = p[i]
                 for name, flowrate in zip(box.outputs.keys(), box.outputs.values()):
-                    list_of_eq[box.name] += -flowrate*box_concentration
-                    list_of_eq[name] += flowrate*box_concentration
-            return [val for val in list_of_eq.values()]
+                    box.equation += -flowrate*box_concentration
+
+                    out_box = [b for b in self.boxes if b.name == name][0]
+                    out_box.equation += flowrate*box_concentration
+            return [box.equation for box in self.boxes]
         return equations
 
     def advance(self):
