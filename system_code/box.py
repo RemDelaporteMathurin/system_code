@@ -14,7 +14,7 @@ class Box:
         self.generation_term = generation_term
 
     def update(self):
-        pass
+        return
 
     def internal_equation(self, box_conc_map, stepsize):
         """Builds the equation for the box excluding links with other boxes
