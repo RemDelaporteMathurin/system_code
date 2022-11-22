@@ -12,25 +12,33 @@ class System:
         self.current_time = 0
         self.t = [self.current_time]
 
+    @property
+    def boxes_and_traps(self):
+        boxes = self.boxes
+        traps = []
+        for box in boxes:
+            traps += box.traps
+        return boxes + traps
+
     def build_equations(self):
         def equations(p):
             # map the concentrations to the boxes
             box_conc_map = {}
-            for i, box in enumerate(self.boxes):
+            for i, box in enumerate(self.boxes_and_traps):
                 box_conc_map[box] = p[i]
 
             # build
 
-            for box in self.boxes:
+            for box in self.boxes_and_traps:
                 box.build_equation(box_conc_map, self.dt)
 
-            return [box.equation for box in self.boxes]
+            return [box.equation for box in self.boxes_and_traps]
         return equations
 
     def advance(self):
-        initial_guess = [box.old_concentration for box in self.boxes]
+        initial_guess = [box.old_concentration for box in self.boxes_and_traps]
         concentrations = fsolve(self.equations, initial_guess)
-        for box, new_concentration in zip(self.boxes, concentrations):
+        for box, new_concentration in zip(self.boxes_and_traps, concentrations):
             box.concentration = new_concentration
             box.old_concentration = new_concentration
             box.concentrations.append(new_concentration)
