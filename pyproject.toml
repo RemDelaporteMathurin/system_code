@@ -21,6 +21,7 @@ dependencies = [
     "numpy",
     "matplotlib",
     "scipy",
+    "streamlit",
 ]
 dynamic = ["version"]
 
@@ -41,3 +42,6 @@ tests = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+
+[project.scripts]
+system_code = "system_code.launch_gui:main"

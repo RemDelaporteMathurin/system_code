@@ -37,4 +37,4 @@ jobs:
           python balanced_scenario.py
           python under_produce_scenario.py
           python over_produce_scenario.py
-          python flf_example.py
+          python icf_example.py
