@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools >= 65.4.0", "setuptools_scm[toml]>=7.0.5"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "system_code"
+authors = [
+  { name="Rémi Delaporte-Mathurin" },
+]
+license = {file = "LICENSE"}
+description = "A systems code for tritium inventory predictions in fusion reactors"
+readme = "README.md"
+requires-python = ">=3.6"
+keywords = ["tritium", "inventory", "fusion"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "scipy",
+]
+dynamic = ["version"]
+
+
+[tool.setuptools_scm]
+write_to = "src/system_code/_version.py"
+
+
+[project.optional-dependencies]
+tests = [
+    "pytest",
+    "sympy"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/RemDelaporteMathurin/system_code"
+"Bug Tracker" = "https://github.com/RemDelaporteMathurin/system_code/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
