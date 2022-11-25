@@ -26,7 +26,7 @@ dynamic = ["version"]
 
 
 [tool.setuptools_scm]
-write_to = "system_code/_version.py"
+write_to = "src/system_code/_version.py"
 
 
 [project.optional-dependencies]
