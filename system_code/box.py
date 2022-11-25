@@ -14,7 +14,9 @@ class Box:
 
         self.equation = 0
         self.inputs = {}
+        self.constant_inputs = {}
         self.outputs = {}
+        self.constant_outputs = {}
         self.traps = []
 
     def add_output(self, box, flowrate):
@@ -32,6 +34,16 @@ class Box:
         self.outputs[box] = flowrate
         box.inputs[self] = flowrate
 
+    def add_constant_output(self, box, flow):
+        """Adds a constant flow from this component to another.
+
+        Args:
+            box (Box): the target box
+            flow (float): the flow in /s
+        """
+        self.constant_outputs[box] = flow
+        box.constant_inputs[self] = flow
+
     def add_trap(self, trap):
         """Add a trap to the component
 
@@ -40,7 +52,7 @@ class Box:
         """
         self.traps.append(trap)
         trap.parent_box = self
-        self.add_output(trap, 0)
+        self.add_output(trap, 0)  # TODO: needed?
 
     def update(self):
         return
@@ -74,11 +86,17 @@ class Box:
                 continue
             self.equation += -flowrate * box_conc_map[self]
 
+        for box, flow in self.constant_outputs.items():
+            self.equation += -flow
+
         # inputs
         for box, flowrate in self.inputs.items():
             if isinstance(box, Trap):
                 continue
             self.equation += flowrate * box_conc_map[box]
+
+        for box, flow in self.constant_inputs.items():
+            self.equation += flow
 
         # - V * k * c * (n - c_t) + V * p * c_t
         for trap in self.traps:
