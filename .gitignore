@@ -132,3 +132,6 @@ dmypy.json
 *.xml
 *.h5
 *.out
+
+# python version file
+**_version.py
