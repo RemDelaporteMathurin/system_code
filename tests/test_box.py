@@ -18,8 +18,8 @@ def test_add_constant_output():
     box1.build_equation({box1: c1, box2: c2}, stepsize=dt)
     box2.build_equation({box1: c1, box2: c2}, stepsize=dt)
 
-    expected_equation_1 = -V1 * (c1 - 0) / dt + V1 * tsc.LAMBDA * c1 - flow
-    expected_equation_2 = -V2 * (c2 - 0) / dt + V2 * tsc.LAMBDA * c2 + flow
+    expected_equation_1 = -V1 * (c1 - 0) / dt - V1 * tsc.LAMBDA * c1 - flow
+    expected_equation_2 = -V2 * (c2 - 0) / dt - V2 * tsc.LAMBDA * c2 + flow
 
     # test
     assert sp.simplify(box1.equation - expected_equation_1) == 0
