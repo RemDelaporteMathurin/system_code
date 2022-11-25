@@ -18,19 +18,17 @@ jobs:
   testing:
     runs-on: ubuntu-latest
     container:
-      image: continuumio/miniconda3:4.9.2
+      image: continuumio/miniconda3:4.12.0
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: install package
         run: |
-          pip install .
+          pip install .[tests]
 
       - name: Run tests
         run: |
-          pip install pytest
-          pip install sympy
           pytest tests
 
       - name: Run examples

@@ -31,7 +31,8 @@ write_to = "system_code/_version.py"
 
 [project.optional-dependencies]
 tests = [
-    "pytest"
+    "pytest",
+    "sympy"
 ]
 
 [project.urls]
@@ -39,4 +40,4 @@ tests = [
 "Bug Tracker" = "https://github.com/RemDelaporteMathurin/system_code/issues"
 
 [tool.setuptools]
-package-dir = {"" = "system_code"}
+package-dir = {"" = "src"}
