@@ -60,28 +60,35 @@ class Box:
 
         self.equation = 0
         # V*(c- c_n)/dt
-        self.equation += -self.volume*(box_conc_map[self] - self.old_concentration)/stepsize
+        self.equation += (
+            -self.volume * (box_conc_map[self] - self.old_concentration) / stepsize
+        )
         # + V*generation
-        self.equation += self.volume*self.generation_term
+        self.equation += self.volume * self.generation_term
         # - V*lambda*c
-        self.equation += -self.volume*box_conc_map[self]*LAMBDA
+        self.equation += -self.volume * box_conc_map[self] * LAMBDA
 
         # outputs
         for box, flowrate in self.outputs.items():
             if isinstance(box, Trap):
                 continue
-            self.equation += -flowrate*box_conc_map[self]
+            self.equation += -flowrate * box_conc_map[self]
 
         # inputs
         for box, flowrate in self.inputs.items():
             if isinstance(box, Trap):
                 continue
-            self.equation += flowrate*box_conc_map[box]
-        
+            self.equation += flowrate * box_conc_map[box]
+
         # - V * k * c * (n - c_t) + V * p * c_t
         for trap in self.traps:
-            self.equation += - trap.volume * trap.k * box_conc_map[self] * (trap.n - box_conc_map[trap])
-            self.equation +=   trap.volume * trap.p * box_conc_map[trap]
+            self.equation += (
+                -trap.volume
+                * trap.k
+                * box_conc_map[self]
+                * (trap.n - box_conc_map[trap])
+            )
+            self.equation += trap.volume * trap.p * box_conc_map[trap]
 
     def reset(self):
         self.concentration = self.initial_concentration
@@ -97,10 +104,15 @@ class Trap(Box):
         self.p = p
         self.n = n
         self.parent_box = None
-    
+
     def build_equation(self, box_conc_map, stepsize):
         super().build_equation(box_conc_map, stepsize)
 
         # + V * k * c * (n - c_t) - V * p * c_t
-        self.equation +=  self.volume * self.k * box_conc_map[self.parent_box] * (self.n - box_conc_map[self])
-        self.equation += -  self.volume * self.p * box_conc_map[self]
+        self.equation += (
+            self.volume
+            * self.k
+            * box_conc_map[self.parent_box]
+            * (self.n - box_conc_map[self])
+        )
+        self.equation += -self.volume * self.p * box_conc_map[self]
