@@ -66,7 +66,7 @@ class System:
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("Concentrations")
-        plt.show()
+        return plt
 
     def plot_inventories(self):
         for box in self.boxes:
@@ -74,4 +74,4 @@ class System:
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("Inventories")
-        plt.show()
+        return plt
