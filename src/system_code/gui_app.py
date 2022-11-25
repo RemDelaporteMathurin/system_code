@@ -70,7 +70,7 @@ def main():
         
         col1_section2, col2_section2, = st.columns([1,3])
         
-        duration = col1_section2.number_input('Duration of run', value=20., min_value=0., step=1.)
+        duration = col1_section2.number_input('Duration of run', value=20, min_value=0, step=1)
         run = col1_section2.button('Run')
         if run:
             my_system.run(duration)
