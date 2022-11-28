@@ -8,7 +8,7 @@ def test_constant_inventory():
     doesn't vary
     """
     # build
-    A = tsc.Box("A", initial_concentration=2)
+    A = tsc.Box("A", initial_inventory=2)
     B = tsc.Box("B")
     C = tsc.Box("C")
 
@@ -24,7 +24,7 @@ def test_constant_inventory():
     # test
     inventory = np.zeros(len(system.t))
     for box in system.boxes:
-        inventory += np.array(box.concentrations)
+        inventory += np.array(box.inventories)
 
     assert np.allclose(inventory, 2)
 
@@ -36,7 +36,7 @@ def test_mass_conservation_system():
     generation_source = 1
     conc_init_A = 2
 
-    A = tsc.Box("A", initial_concentration=conc_init_A)
+    A = tsc.Box("A", initial_inventory=conc_init_A)
     B = tsc.Box("B", generation_term=generation_source)
     C = tsc.Box("C", generation_term=generation_source)
 
@@ -52,7 +52,7 @@ def test_mass_conservation_system():
     # test
     inventory = np.zeros(len(system.t))
     for box in system.boxes:
-        inventory += np.array(box.concentrations)
+        inventory += np.array(box.inventories)
 
     assert np.allclose(
         inventory,
@@ -66,7 +66,7 @@ def test_mass_conservation_box():
     """
     # build
     F_AB = 2
-    A = tsc.Box("A", initial_concentration=2)
+    A = tsc.Box("A", initial_inventory=2)
     B = tsc.Box("B", generation_term=0)
     C = tsc.Box("C", generation_term=0)
 
@@ -80,8 +80,8 @@ def test_mass_conservation_box():
     system.run(20)
 
     # test
-    concentration_A = np.array(A.concentrations)
-    expected = A.concentrations[0] * \
+    concentration_A = np.array(A.inventories)
+    expected = A.inventories[0] * \
         np.exp((tsc.LAMBDA-F_AB)*np.array(system.t))
 
     # TODO: try to replicate this with pure scipy, this is weird
@@ -91,14 +91,14 @@ def test_mass_conservation_box():
 def test_decay():
     """Checks that concentration of a box decays with time
     """
-    A = tsc.Box("A", initial_concentration=3)
+    A = tsc.Box("A", initial_inventory=3)
     half_life = np.log(2)/tsc.LAMBDA
     system = tsc.System([A], dt=half_life/30)
 
     system.run(half_life)
 
-    assert A.concentrations[-1] == \
-        pytest.approx(A.concentrations[0]/2, rel=0.05)
+    assert A.inventories[-1] == \
+        pytest.approx(A.inventories[0]/2, rel=0.05)
 
 
 def test_reset():
@@ -106,7 +106,7 @@ def test_reset():
     """
     # build
     F_AB = 2
-    A = tsc.Box("A", initial_concentration=2)
+    A = tsc.Box("A", initial_inventory=2)
     B = tsc.Box("B", generation_term=0)
     C = tsc.Box("C", generation_term=0)
 
@@ -126,5 +126,5 @@ def test_reset():
     assert system.current_time == 0
     assert system.dt == system.initial_dt
     for box in system.boxes:
-        assert len(box.concentrations) == 1
+        assert len(box.inventories) == 1
     assert system.equations != old_eqs

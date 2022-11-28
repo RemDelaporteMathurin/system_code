@@ -2,13 +2,13 @@ from system_code import LAMBDA
 
 
 class Box:
-    def __init__(self, name, initial_concentration=0, generation_term=0):
+    def __init__(self, name, initial_inventory=0, generation_term=0):
         self.name = name
-        self.initial_concentration = initial_concentration
+        self.initial_inventory = initial_inventory
 
-        self.concentration = self.initial_concentration
-        self.old_concentration = self.initial_concentration
-        self.concentrations = [self.concentration]
+        self.inventory = self.initial_inventory
+        self.old_inventory = self.initial_inventory
+        self.inventories = [self.inventory]
         self.generation_term = generation_term
 
         self.equation = 0
@@ -56,12 +56,12 @@ class Box:
     def update(self):
         return
 
-    def build_equation(self, box_conc_map, stepsize):
+    def build_equation(self, box_inv_map, stepsize):
         """Builds the equation for the box excluding links with other boxes
 
         Args:
-            box_conc_map (dict): a map linking boxes to their
-                concentrations
+            box_inv_map (dict): a map linking boxes to their
+                inventories
             stepsize (float): the stepsize
 
         Returns:
@@ -72,18 +72,18 @@ class Box:
         self.equation = 0
         # (I - I_n)/dt
         self.equation += (
-            -(box_conc_map[self] - self.old_concentration) / stepsize
+            -(box_inv_map[self] - self.old_inventory) / stepsize
         )
         # + generation
         self.equation += self.generation_term
         # - lambda*I
-        self.equation += -box_conc_map[self] * LAMBDA
+        self.equation += -box_inv_map[self] * LAMBDA
 
         # outputs
         for box, flowrate in self.outputs.items():
             if isinstance(box, Trap):
                 continue
-            self.equation += -flowrate * box_conc_map[self]
+            self.equation += -flowrate * box_inv_map[self]
 
         for box, flow in self.constant_outputs.items():
             self.equation += -flow
@@ -92,7 +92,7 @@ class Box:
         for box, flowrate in self.inputs.items():
             if isinstance(box, Trap):
                 continue
-            self.equation += flowrate * box_conc_map[box]
+            self.equation += flowrate * box_inv_map[box]
 
         for box, flow in self.constant_inputs.items():
             self.equation += flow
@@ -102,35 +102,35 @@ class Box:
             self.equation += (
                 -trap.volume
                 * trap.k
-                * box_conc_map[self]
-                * (trap.n - box_conc_map[trap])
+                * box_inv_map[self]
+                * (trap.n - box_inv_map[trap])
             )
-            self.equation += trap.volume * trap.p * box_conc_map[trap]
+            self.equation += trap.volume * trap.p * box_inv_map[trap]
 
     def reset(self):
-        self.concentration = self.initial_concentration
-        self.old_concentration = self.initial_concentration
-        self.concentrations = [self.concentration]
+        self.inventory = self.initial_inventory
+        self.old_inventory = self.initial_inventory
+        self.inventories = [self.inventory]
         # TODO what about generation term?
 
 
 class Trap(Box):
-    def __init__(self, k, p, n, name, volume, initial_concentration=0):
-        super().__init__(name, initial_concentration)
+    def __init__(self, k, p, n, name, volume, initial_inventory=0):
+        super().__init__(name, initial_inventory)
         self.k = k
         self.p = p
         self.n = n
         self.volume = volume
         self.parent_box = None
 
-    def build_equation(self, box_conc_map, stepsize):
-        super().build_equation(box_conc_map, stepsize)
+    def build_equation(self, box_inv_map, stepsize):
+        super().build_equation(box_inv_map, stepsize)
 
         # + V * k * c * (n - c_t) - V * p * c_t
         self.equation += (
             self.volume
             * self.k
-            * box_conc_map[self.parent_box]
-            * (self.n - box_conc_map[self])
+            * box_inv_map[self.parent_box]
+            * (self.n - box_inv_map[self])
         )
-        self.equation += -self.volume * self.p * box_conc_map[self]
+        self.equation += -self.volume * self.p * box_inv_map[self]
