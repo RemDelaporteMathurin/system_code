@@ -22,7 +22,7 @@ class System:
 
     def build_equations(self):
         def equations(p):
-            # map the concentrations to the boxes
+            # map the inventories to the boxes
             box_conc_map = {}
             for i, box in enumerate(self.boxes_and_traps):
                 box_conc_map[box] = p[i]
@@ -36,12 +36,12 @@ class System:
         return equations
 
     def advance(self):
-        initial_guess = [box.old_concentration for box in self.boxes_and_traps]
-        concentrations = fsolve(self.equations, initial_guess)
-        for box, new_concentration in zip(self.boxes_and_traps, concentrations):
-            box.concentration = new_concentration
-            box.old_concentration = new_concentration
-            box.concentrations.append(new_concentration)
+        initial_guess = [box.old_inventory for box in self.boxes_and_traps]
+        inventories = fsolve(self.equations, initial_guess)
+        for box, new_inventory in zip(self.boxes_and_traps, inventories):
+            box.inventory = new_inventory
+            box.old_inventory = new_inventory
+            box.inventories.append(new_inventory)
             box.update()
         self.current_time += self.dt
         self.t.append(self.current_time)
@@ -60,17 +60,10 @@ class System:
             box.reset()
         self.equations = self.build_equations()
 
-    def plot_concentrations(self):
-        for box in self.boxes:
-            plt.plot(self.t, box.concentrations, label=box.name)
-        plt.legend()
-        plt.xlabel("Time")
-        plt.ylabel("Concentrations")
-        plt.show()
 
     def plot_inventories(self):
         for box in self.boxes:
-            plt.plot(self.t, np.array(box.concentrations)*box.volume, label=box.name)
+            plt.plot(self.t, np.array(box.inventories), label=box.name)
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("Inventories")

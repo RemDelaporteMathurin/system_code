@@ -2,14 +2,13 @@ from system_code import LAMBDA
 
 
 class Box:
-    def __init__(self, name, volume, initial_concentration=0, generation_term=0):
+    def __init__(self, name, initial_inventory=0, generation_term=0):
         self.name = name
-        self.volume = volume
-        self.initial_concentration = initial_concentration
+        self.initial_inventory = initial_inventory
 
-        self.concentration = self.initial_concentration
-        self.old_concentration = self.initial_concentration
-        self.concentrations = [self.concentration]
+        self.inventory = self.initial_inventory
+        self.old_inventory = self.initial_inventory
+        self.inventories = [self.inventory]
         self.generation_term = generation_term
 
         self.equation = 0
@@ -26,7 +25,7 @@ class Box:
 
         Args:
             box (Box): the target box
-            flowrate (float): the flow rate in m3/s
+            flowrate (float): the flow rate in #/s
         """
         if box in self.outputs or self in box.inputs:
             raise ValueError("Link already exists")
@@ -57,34 +56,34 @@ class Box:
     def update(self):
         return
 
-    def build_equation(self, box_conc_map, stepsize):
+    def build_equation(self, box_inv_map, stepsize):
         """Builds the equation for the box excluding links with other boxes
 
         Args:
-            box_conc_map (dict): a map linking boxes to their
-                concentrations
+            box_inv_map (dict): a map linking boxes to their
+                inventories
             stepsize (float): the stepsize
 
         Returns:
             float: the value of internal equation of the box
         """
-        # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
+        # (I - I_n)/dt = sum( flow_rate * I_inputs) - sum(flowrate*I) + generation - lambda*I
 
         self.equation = 0
-        # V*(c- c_n)/dt
+        # (I - I_n)/dt
         self.equation += (
-            -self.volume * (box_conc_map[self] - self.old_concentration) / stepsize
+            -(box_inv_map[self] - self.old_inventory) / stepsize
         )
-        # + V*generation
-        self.equation += self.volume * self.generation_term
-        # - V*lambda*c
-        self.equation += -self.volume * box_conc_map[self] * LAMBDA
+        # + generation
+        self.equation += self.generation_term
+        # - lambda*I
+        self.equation += -box_inv_map[self] * LAMBDA
 
         # outputs
         for box, flowrate in self.outputs.items():
             if isinstance(box, Trap):
                 continue
-            self.equation += -flowrate * box_conc_map[self]
+            self.equation += -flowrate * box_inv_map[self]
 
         for box, flow in self.constant_outputs.items():
             self.equation += -flow
@@ -93,44 +92,46 @@ class Box:
         for box, flowrate in self.inputs.items():
             if isinstance(box, Trap):
                 continue
-            self.equation += flowrate * box_conc_map[box]
+            self.equation += flowrate * box_inv_map[box]
 
         for box, flow in self.constant_inputs.items():
             self.equation += flow
 
-        # - V * k * c * (n - c_t) + V * p * c_t
+        # - V_t * k * c * (n - c_t) + V_t * p * c_t
         for trap in self.traps:
+            c_t = box_inv_map[trap]/trap.volume
+            c_m = box_inv_map[self] * trap.solid_fraction/trap.volume
             self.equation += (
                 -trap.volume
-                * trap.k
-                * box_conc_map[self]
-                * (trap.n - box_conc_map[trap])
+                * trap.k * c_m * (trap.n - c_t)
             )
-            self.equation += trap.volume * trap.p * box_conc_map[trap]
+            self.equation += trap.volume * trap.p * c_t
 
     def reset(self):
-        self.concentration = self.initial_concentration
-        self.old_concentration = self.initial_concentration
-        self.concentrations = [self.concentration]
+        self.inventory = self.initial_inventory
+        self.old_inventory = self.initial_inventory
+        self.inventories = [self.inventory]
         # TODO what about generation term?
 
 
 class Trap(Box):
-    def __init__(self, k, p, n, name, volume, initial_concentration=0):
-        super().__init__(name, volume, initial_concentration)
+    def __init__(self, k, p, n, name, volume, initial_inventory=0, solid_fraction=1):
+        super().__init__(name, initial_inventory)
         self.k = k
         self.p = p
         self.n = n
+        self.volume = volume
+        self.solid_fraction = solid_fraction
         self.parent_box = None
 
-    def build_equation(self, box_conc_map, stepsize):
-        super().build_equation(box_conc_map, stepsize)
+    def build_equation(self, box_inv_map, stepsize):
+        super().build_equation(box_inv_map, stepsize)
 
         # + V * k * c * (n - c_t) - V * p * c_t
+        c_m = box_inv_map[self.parent_box] * self.solid_fraction / self.volume
+        c_t = box_inv_map[self] / self.volume
         self.equation += (
             self.volume
-            * self.k
-            * box_conc_map[self.parent_box]
-            * (self.n - box_conc_map[self])
+            * self.k * c_m * (self.n - c_t)
         )
-        self.equation += -self.volume * self.p * box_conc_map[self]
+        self.equation += -self.volume * self.p * c_t
