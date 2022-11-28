@@ -1,5 +1,6 @@
 import system_code as tsc
 import numpy as np
+import sympy as sp
 
 def test_one_box_only():
     """Makes a simple 'cycle' with 1 box with a trap and checks mass is conserved
@@ -23,3 +24,32 @@ def test_one_box_only():
     print(total_inv)
     # TODO radioactive decay is on, careful
     assert np.isclose(total_inv, A.initial_inventory).all()
+
+def test_equation():
+    """Checks that the produced equation is the correct one"""
+    I_m = sp.Symbol("I_m")
+    I_m_n = sp.Symbol("I_m_n")
+    I_t = sp.Symbol("I_t")
+    I_t_n = sp.Symbol("I_t_n")
+    dt = sp.Symbol("dt")
+    V_t = sp.Symbol("V_t")
+    K = sp.Symbol("K")
+    k = sp.Symbol("k")
+    n = sp.Symbol("n")
+    p = sp.Symbol("p")
+
+    A = tsc.Box("A", initial_inventory=I_m_n)
+
+    A_trap = tsc.Trap(k=k, p=p, n=n, volume=V_t, name="A_trap", initial_inventory=I_t_n, solid_fraction=K)
+
+    A.add_trap(A_trap)
+
+    # run
+    A_trap.build_equation({A: I_m, A_trap: I_t}, stepsize=dt)
+
+    # test
+
+    expected_equation = -(I_t - I_t_n)/dt + k * I_m * K * (n - I_t/V_t) - p*I_t - tsc.LAMBDA*I_t
+    print(expected_equation)
+    print(A_trap.equation)
+    assert sp.simplify(A_trap.equation-expected_equation) == 0
