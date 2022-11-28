@@ -100,7 +100,7 @@ class Box:
         # - V_t * k * c * (n - c_t) + V_t * p * c_t
         for trap in self.traps:
             c_t = box_inv_map[trap]/trap.volume
-            c_m = box_inv_map[self]/trap.volume
+            c_m = box_inv_map[self] * trap.solid_fraction/trap.volume
             self.equation += (
                 -trap.volume
                 * trap.k * c_m * (trap.n - c_t)
@@ -115,19 +115,20 @@ class Box:
 
 
 class Trap(Box):
-    def __init__(self, k, p, n, name, volume, initial_inventory=0):
+    def __init__(self, k, p, n, name, volume, initial_inventory=0, solid_fraction=1):
         super().__init__(name, initial_inventory)
         self.k = k
         self.p = p
         self.n = n
         self.volume = volume
+        self.solid_fraction = solid_fraction
         self.parent_box = None
 
     def build_equation(self, box_inv_map, stepsize):
         super().build_equation(box_inv_map, stepsize)
 
         # + V * k * c * (n - c_t) - V * p * c_t
-        c_m = box_inv_map[self.parent_box] / self.volume
+        c_m = box_inv_map[self.parent_box] * self.solid_fraction / self.volume
         c_t = box_inv_map[self] / self.volume
         self.equation += (
             self.volume
