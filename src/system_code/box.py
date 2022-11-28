@@ -2,9 +2,9 @@ from system_code import LAMBDA
 
 
 class Box:
-    def __init__(self, name, volume, initial_concentration=0, generation_term=0):
+    def __init__(self, name, initial_concentration=0, generation_term=0):
         self.name = name
-        self.volume = volume
+        self.volume = 1
         self.initial_concentration = initial_concentration
 
         self.concentration = self.initial_concentration
@@ -116,8 +116,8 @@ class Box:
 
 
 class Trap(Box):
-    def __init__(self, k, p, n, name, volume, initial_concentration=0):
-        super().__init__(name, volume, initial_concentration)
+    def __init__(self, k, p, n, name, initial_concentration=0):
+        super().__init__(name, initial_concentration)
         self.k = k
         self.p = p
         self.n = n

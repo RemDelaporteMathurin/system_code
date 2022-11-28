@@ -5,9 +5,9 @@ def test_one_box_only():
     """Makes a simple 'cycle' with 1 box with a trap and checks mass is conserved
     """
 
-    A = tsc.Box("A", volume=1, initial_concentration=1)
+    A = tsc.Box("A", initial_concentration=1)
 
-    A_trap = tsc.Trap(k=0.1, p=0.1, n=1, name="A_trap", volume=1)
+    A_trap = tsc.Trap(k=0.1, p=0.1, n=1, name="A_trap")
 
     A.add_trap(A_trap)
 
@@ -15,8 +15,8 @@ def test_one_box_only():
 
     sys.run(2)
 
-    inv_A = np.array(A.concentrations)*A.volume
-    inv_A_trapped = np.array(A_trap.concentrations)*A_trap.volume
+    inv_A = np.array(A.concentrations)
+    inv_A_trapped = np.array(A_trap.concentrations)
     total_inv = inv_A + inv_A_trapped
     print(inv_A)
     print(inv_A_trapped)

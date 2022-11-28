@@ -3,10 +3,10 @@ from system_code import Box
 
 class Plasma(Box):
     def __init__(
-            self, name, volume, plasma_burning_rate,
+            self, name, plasma_burning_rate,
             initial_concentration=0, generation_term=0):
         super().__init__(
-            name, volume,
+            name,
             initial_concentration, generation_term)
         self.plasma_burning_rate = plasma_burning_rate
 
