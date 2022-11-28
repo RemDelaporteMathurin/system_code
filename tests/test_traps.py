@@ -7,7 +7,7 @@ def test_one_box_only():
 
     A = tsc.Box("A", initial_concentration=1)
 
-    A_trap = tsc.Trap(k=0.1, p=0.1, n=1, name="A_trap")
+    A_trap = tsc.Trap(k=0.1, p=0.1, n=1, volume=2, name="A_trap")
 
     A.add_trap(A_trap)
 

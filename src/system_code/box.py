@@ -4,7 +4,6 @@ from system_code import LAMBDA
 class Box:
     def __init__(self, name, initial_concentration=0, generation_term=0):
         self.name = name
-        self.volume = 1
         self.initial_concentration = initial_concentration
 
         self.concentration = self.initial_concentration
@@ -26,7 +25,7 @@ class Box:
 
         Args:
             box (Box): the target box
-            flowrate (float): the flow rate in m3/s
+            flowrate (float): the flow rate in #/s
         """
         if box in self.outputs or self in box.inputs:
             raise ValueError("Link already exists")
@@ -68,17 +67,17 @@ class Box:
         Returns:
             float: the value of internal equation of the box
         """
-        # V*(c- c_n)/dt = sum( flow_rate * c_inputs) - sum(flowrate*c) + generation - V*lambda*c
+        # (I - I_n)/dt = sum( flow_rate * I_inputs) - sum(flowrate*I) + generation - lambda*I
 
         self.equation = 0
-        # V*(c- c_n)/dt
+        # (I - I_n)/dt
         self.equation += (
-            -self.volume * (box_conc_map[self] - self.old_concentration) / stepsize
+            -(box_conc_map[self] - self.old_concentration) / stepsize
         )
-        # + V*generation
-        self.equation += self.volume * self.generation_term
-        # - V*lambda*c
-        self.equation += -self.volume * box_conc_map[self] * LAMBDA
+        # + generation
+        self.equation += self.generation_term
+        # - lambda*I
+        self.equation += -box_conc_map[self] * LAMBDA
 
         # outputs
         for box, flowrate in self.outputs.items():
@@ -98,7 +97,7 @@ class Box:
         for box, flow in self.constant_inputs.items():
             self.equation += flow
 
-        # - V * k * c * (n - c_t) + V * p * c_t
+        # - V_t * k * c * (n - c_t) + V_t * p * c_t
         for trap in self.traps:
             self.equation += (
                 -trap.volume
@@ -116,11 +115,12 @@ class Box:
 
 
 class Trap(Box):
-    def __init__(self, k, p, n, name, initial_concentration=0):
+    def __init__(self, k, p, n, name, volume, initial_concentration=0):
         super().__init__(name, initial_concentration)
         self.k = k
         self.p = p
         self.n = n
+        self.volume = volume
         self.parent_box = None
 
     def build_equation(self, box_conc_map, stepsize):

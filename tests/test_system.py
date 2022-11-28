@@ -24,7 +24,7 @@ def test_constant_inventory():
     # test
     inventory = np.zeros(len(system.t))
     for box in system.boxes:
-        inventory += box.volume * np.array(box.concentrations)
+        inventory += np.array(box.concentrations)
 
     assert np.allclose(inventory, 2)
 
@@ -52,11 +52,11 @@ def test_mass_conservation_system():
     # test
     inventory = np.zeros(len(system.t))
     for box in system.boxes:
-        inventory += box.volume * np.array(box.concentrations)
+        inventory += np.array(box.concentrations)
 
     assert np.allclose(
         inventory,
-        A.volume*conc_init_A + (B.volume+C.volume)*generation_source*np.array(system.t)
+        conc_init_A + 2*generation_source*np.array(system.t)
         )
 
 
@@ -82,7 +82,7 @@ def test_mass_conservation_box():
     # test
     concentration_A = np.array(A.concentrations)
     expected = A.concentrations[0] * \
-        np.exp((tsc.LAMBDA-F_AB/A.volume)*np.array(system.t))
+        np.exp((tsc.LAMBDA-F_AB)*np.array(system.t))
 
     # TODO: try to replicate this with pure scipy, this is weird
     assert np.allclose(concentration_A, expected, rtol=0.07, atol=1e-5)
