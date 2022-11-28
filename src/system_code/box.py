@@ -99,13 +99,13 @@ class Box:
 
         # - V_t * k * c * (n - c_t) + V_t * p * c_t
         for trap in self.traps:
+            c_t = box_inv_map[trap]/trap.volume
+            c_m = box_inv_map[self]/trap.volume
             self.equation += (
                 -trap.volume
-                * trap.k
-                * box_inv_map[self]
-                * (trap.n - box_inv_map[trap])
+                * trap.k * c_m * (trap.n - c_t)
             )
-            self.equation += trap.volume * trap.p * box_inv_map[trap]
+            self.equation += trap.volume * trap.p * c_t
 
     def reset(self):
         self.inventory = self.initial_inventory
@@ -127,10 +127,10 @@ class Trap(Box):
         super().build_equation(box_inv_map, stepsize)
 
         # + V * k * c * (n - c_t) - V * p * c_t
+        c_m = box_inv_map[self.parent_box] / self.volume
+        c_t = box_inv_map[self] / self.volume
         self.equation += (
             self.volume
-            * self.k
-            * box_inv_map[self.parent_box]
-            * (self.n - box_inv_map[self])
+            * self.k * c_m * (self.n - c_t)
         )
-        self.equation += -self.volume * self.p * box_inv_map[self]
+        self.equation += -self.volume * self.p * c_t
