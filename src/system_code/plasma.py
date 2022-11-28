@@ -4,10 +4,9 @@ from system_code import Box
 class Plasma(Box):
     def __init__(
             self, name, plasma_burning_rate,
-            initial_concentration=0, generation_term=0):
+            initial_inventory=0, generation_term=0):
         super().__init__(
-            name,
-            initial_concentration, generation_term)
+            name, initial_inventory, generation_term)
         self.plasma_burning_rate = plasma_burning_rate
 
     def build_equation(self, box_conc_map, stepsize):

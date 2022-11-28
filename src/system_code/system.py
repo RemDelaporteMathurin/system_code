@@ -63,7 +63,7 @@ class System:
 
     def plot_inventories(self):
         for box in self.boxes:
-            plt.plot(self.t, np.array(box.inventories)*box.volume, label=box.name)
+            plt.plot(self.t, np.array(box.inventories), label=box.name)
         plt.legend()
         plt.xlabel("Time")
         plt.ylabel("Inventories")
