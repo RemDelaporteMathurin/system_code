@@ -7,18 +7,18 @@ def test_plasma_equation():
     """
 
     # build
-    c = sp.Symbol("c")
-    c_n = sp.Symbol("c_n")
+    I = sp.Symbol("I")
+    I_n = sp.Symbol("I_n")
     dt = sp.Symbol("dt")
     burning_rate = sp.Symbol("br")
     gamma = sp.Symbol("gamma")
 
     # run
-    my_plasma = tsc.Plasma("plasma", burning_rate, initial_concentration=c_n, generation_term=gamma)
+    my_plasma = tsc.Plasma("plasma", burning_rate, initial_inventory=I_n, generation_term=gamma)
 
-    my_plasma.build_equation({my_plasma: c}, stepsize=dt)
+    my_plasma.build_equation({my_plasma: I}, stepsize=dt)
 
-    expected_equation = -(c-c_n)/dt + gamma - tsc.LAMBDA*c - burning_rate*c
+    expected_equation = -(I-I_n)/dt + gamma - tsc.LAMBDA*I - burning_rate*I
 
     # test
     assert sp.simplify(my_plasma.equation-expected_equation) == 0
