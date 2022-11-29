@@ -1,4 +1,4 @@
-from system_code import LAMBDA
+from system_code import LAMBDA, T_MASS
 
 
 class Box:
@@ -100,8 +100,20 @@ class Box:
             c_t = box_inv_map[trap] / trap.volume  # kg/m3
             c_m = box_inv_map[self] * trap.solid_fraction / trap.volume  # kg/m3
 
-            self.equation += -trap.volume * trap.k * c_m * (trap.n - c_t)
-            self.equation += trap.volume * trap.p * c_t
+            c_t = c_t / T_MASS  # at / m3
+            c_m = c_m / T_MASS  # at / m3
+
+            trapping_rate = trap.k * c_m * (trap.n - c_t)  # at / m3 / s
+            detrapping_rate = trap.p * c_t  # at / m3 / s
+
+            trapping_rate *= trap.volume  # at / s
+            detrapping_rate *= trap.volume  # at / s
+
+            trapping_rate *= T_MASS  # kg/s
+            detrapping_rate *= T_MASS  # kg/s
+
+            self.equation += -trapping_rate
+            self.equation += detrapping_rate
 
     def reset(self):
         self.inventory = self.initial_inventory
@@ -131,5 +143,17 @@ class Trap(Box):
         c_m = I_m_s / self.volume  # kg/m3
         c_t = I_t / self.volume  # kg/m3
 
-        self.equation += self.volume * self.k * c_m * (self.n - c_t)
-        self.equation += -self.volume * self.p * c_t
+        c_t = c_t / T_MASS  # at / m3
+        c_m = c_m / T_MASS  # at / m3
+
+        trapping_rate = self.k * c_m * (self.n - c_t)  # at / m3 / s
+        detrapping_rate = self.p * c_t  # at / m3 / s
+
+        trapping_rate *= self.volume  # at / s
+        detrapping_rate *= self.volume  # at / s
+
+        trapping_rate *= T_MASS  # kg/s
+        detrapping_rate *= T_MASS  # kg/s
+
+        self.equation += trapping_rate
+        self.equation += -detrapping_rate

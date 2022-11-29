@@ -58,12 +58,15 @@ def test_equation():
 
     # test
     c_m = I_m * K / V_t  # kg/m3
-    c_m = c_m / tsc.MOLAR_MASS  # at/m3
+    c_m = c_m / tsc.T_MASS  # at/m3
+
     c_t = I_t / V_t  # kg/m3
-    c_t = c_t / tsc.MOLAR_MASS  # at/m3
+    c_t = c_t / tsc.T_MASS  # at/m3
 
     expected_equation = (
-        -(I_t - I_t_n) / dt + V_t * (k * c_m * (n - c_t) - p * c_t) - tsc.LAMBDA * I_t
+        -(I_t - I_t_n) / dt
+        + V_t * tsc.T_MASS * (k * c_m * (n - c_t) - p * c_t)
+        - tsc.LAMBDA * I_t
     )
     print(expected_equation)
     print(A_trap.equation)
