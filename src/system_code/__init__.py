@@ -1,4 +1,12 @@
-LAMBDA = 1.678e-9  # in s-1
+import pint
+
+ureg = pint.UnitRegistry()
+
+LAMBDA = (1.678e-9 * ureg.s**-1).magnitude  # in s-1
+# T_MASS = 3.01604928132 * ureg.g * ureg.mol**-1  # in g/mol
+# T_MASS = 1  # T_MASS.to(ureg.kg * ureg.particle**-1).magnitude
+
+# T_MASS = 1
 
 from .system import System
 from .box import Box, Trap

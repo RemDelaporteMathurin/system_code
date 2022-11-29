@@ -71,9 +71,7 @@ class Box:
 
         self.equation = 0
         # (I - I_n)/dt
-        self.equation += (
-            -(box_inv_map[self] - self.old_inventory) / stepsize
-        )
+        self.equation += -(box_inv_map[self] - self.old_inventory) / stepsize
         # + generation
         self.equation += self.generation_term
         # - lambda*I
@@ -99,12 +97,10 @@ class Box:
 
         # - V_t * k * c * (n - c_t) + V_t * p * c_t
         for trap in self.traps:
-            c_t = box_inv_map[trap]/trap.volume
-            c_m = box_inv_map[self] * trap.solid_fraction/trap.volume
-            self.equation += (
-                -trap.volume
-                * trap.k * c_m * (trap.n - c_t)
-            )
+            c_t = box_inv_map[trap] / trap.volume  # kg/m3
+            c_m = box_inv_map[self] * trap.solid_fraction / trap.volume  # kg/m3
+
+            self.equation += -trap.volume * trap.k * c_m * (trap.n - c_t)
             self.equation += trap.volume * trap.p * c_t
 
     def reset(self):
@@ -128,10 +124,12 @@ class Trap(Box):
         super().build_equation(box_inv_map, stepsize)
 
         # + V * k * c * (n - c_t) - V * p * c_t
-        c_m = box_inv_map[self.parent_box] * self.solid_fraction / self.volume
-        c_t = box_inv_map[self] / self.volume
-        self.equation += (
-            self.volume
-            * self.k * c_m * (self.n - c_t)
-        )
+
+        I_m_s = box_inv_map[self.parent_box] * self.solid_fraction
+        I_t = box_inv_map[self]
+
+        c_m = I_m_s / self.volume  # kg/m3
+        c_t = I_t / self.volume  # kg/m3
+
+        self.equation += self.volume * self.k * c_m * (self.n - c_t)
         self.equation += -self.volume * self.p * c_t
